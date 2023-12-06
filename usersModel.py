@@ -58,6 +58,8 @@ def insertUser(db: Collection , email: str, password: str):
            print("added a new user")
     except Exception as error:
         print("Error: ", error)
+
+        
 #to only be used in the login option
 #TODO: hash the password
 def findUser(db: Collection, email:str, password:str):

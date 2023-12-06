@@ -34,10 +34,22 @@ def user_selection(selected_index):
             except Exception as e:
                 print(e)
         case 1:
-            signup_email = getEmailInput()
-            signup_password = getPasswordInput()
-            insertUser(users_collection, signup_email, signup_password)
+            signed_up = False
+            while signed_up  != True:
+              signed_up = sign_up(users_collection)
 
+
+def sign_up(users_collection):
+    signup_email = getEmailInput()
+    signup_password = getPasswordInput()
+    #Check if user is already in database
+    result = findUser(users_collection, signup_email, signup_password)
+    if result is None:
+        insertUser(users_collection, signup_email, signup_password)
+        return True
+    else:
+        print("Email has already been used for sign up, please try again")
+        return False
 
 
 #GET THE URL FROM ENVIRONMENT
