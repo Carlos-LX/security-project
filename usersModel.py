@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 from InputValidator import email_validation
 from InputValidator import password_validation
-
+import hashlib
 
 def initializeUsers(url):
     #create a client
@@ -35,20 +35,54 @@ def initializeUsers(url):
 #TODO: hash the password
 def insertUser(db: Collection , email: str, password: str):
     try:
+
+       #define our hasher:
+       hasher = hashlib.sha512()
        if (email_validation(email) and password_validation(password)):
+           
+            #encode our email and passwords first
+           email = email.encode('utf-8')
+           password = password.encode('utf-8')
+
+
+           #hash our password
+           hasher.update(password)
+           password = hasher.hexdigest()
+
+           #hash our email
+           hasher.update(email)
+           email = hasher.hexdigest()
+
+            #insert user in database:
            db.insert_one({"email" : email, "password" : password})
            print("added a new user")
     except Exception as error:
         print("Error: ", error)
-
 #to only be used in the login option
 #TODO: hash the password
 def findUser(db: Collection, email:str, password:str):
     try:
+        #encode our email and passwords first
+        email = email.encode('utf-8')
+        password = password.encode('utf-8')
+
+        #define our hasher:
+        hasher = hashlib.sha512()
+        hasher.update(password)
+        password = hasher.hexdigest()
+
+        #hash our email
+        hasher.update(email)
+        email = hasher.hexdigest()
+        print(email)
+        print(password)
         result = db.find_one({"email" : email, "password" : password})
+        
         if result is None:
             raise Exception("Could not find user in database")
     except Exception as error:
         print("Error: ", error)
+    finally:
+        return result
 
 

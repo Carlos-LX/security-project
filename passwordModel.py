@@ -7,6 +7,7 @@ from InputValidator import email_validation
 from InputValidator import password_validation
 
 
+
 def initialize(url, database_name):
     #create a client
     try:
