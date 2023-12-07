@@ -7,11 +7,22 @@ from usersModel import *
 import os
 import pick
 from User import User
+import base64
 
 
 #initialize the .env variables
 load_dotenv()
 currentUser = None
+
+def encrypt_inserted_message(key, string):
+    cipher = Fernet(key)
+    encryped_string = cipher.encrypt(string.encode())
+    return encryped_string.decode()
+def decrypt_inserted_message(key, encrypted_string):
+    cipher = Fernet(key)
+    decryped_string = cipher.decrypt(encrypted_string).decode()
+    return decryped_string
+
 def startup_selection(selected_index):
     users_collection=initializeUsers(url)
     match selected_index: #basically a switch statement
@@ -29,7 +40,7 @@ def startup_selection(selected_index):
                     print()
                     pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
                     picked_action = user_selection()
-                    user_action(picked_action, pw_collection)
+                    user_action(currentUser, picked_action, pw_collection)
             except Exception as e:
                 print(e)
         case 1:
@@ -39,24 +50,34 @@ def startup_selection(selected_index):
 
 
 
-def user_action(action, collection: Collection): #do an action on the collection basically
+def user_action(user : User, action, collection: Collection): #do an action on the collection basically
     #clear the terminal
     os.system('cls||clear')
     match action:
         case 0:
             newly_added_email = getEmailInput()
             newly_added_password = getPasswordInput()
-            insertPassword(collection, newly_added_email, newly_added_password)
+            details_key = user.generateKey()
+            
+            encrypted_email = encrypt_inserted_message(details_key,newly_added_email)
+            encrypted_password = encrypt_inserted_message(details_key,newly_added_password)
+            insertPassword(collection, encrypted_email, encrypted_password)
         case 1:
             print("test1")
         case 2:
+            details_key = user.generateKey()
             allpw = getPasswords(collection)
             for pw in allpw:
-                print("Email: " + pw['email'] + "\t Password: " + pw['password'])
+                decrypted_email = decrypt_inserted_message(details_key, pw['email'])
+                decrypted_password = decrypt_inserted_message(details_key, pw['password'])
+                print("Email: " + decrypted_email + "\t Password: " + decrypted_password)
+            input("Press any key to return to menu")
+        case 3:
+            return None
 
 def user_selection():
     prompt = "What do you want to do? "
-    options = ['Add an account credentials', 'Delete an account credentials', 'View all credentials']
+    options = ['Add an account credentials', 'Delete an account credentials', 'View all credentials', 'Logout']
     selected_option, selected_index = pick.pick(options, prompt)
     return selected_index
 

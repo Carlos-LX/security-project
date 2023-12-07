@@ -35,7 +35,6 @@ def initialize(url, database_name):
 
 def insertPassword(collection: Collection, email: str, password: str):
     try:
-       if (email_validation(email) and password_validation(password)):
            collection.insert_one({"email" : email, "password" : password})
            print("Successfully added details to database")
     except Exception as error:
