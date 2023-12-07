@@ -44,10 +44,11 @@ def startup_selection(selected_index):
                         pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
                         while picked_action != 3:
                             picked_action = user_selection()
+                            user_action(currentUser, picked_action, pw_collection)
                         if picked_action == 3:
                             currentUser = None
                             break
-                        user_action(currentUser, picked_action, pw_collection)
+                      
 
                 except Exception as e:
                     print(e)
