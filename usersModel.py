@@ -8,6 +8,10 @@ from InputValidator import email_validation
 from InputValidator import password_validation
 import hashlib
 
+
+class UserNotFoundError(Exception):
+    pass
+
 def initializeUsers(url):
     #create a client
     try:
@@ -44,18 +48,20 @@ def insertUser(db: Collection , email: str, password: str):
            email = email.encode('utf-8')
            password = password.encode('utf-8')
 
+          #hash our email
+           hasher.update(email)
+           email = hasher.hexdigest()
+
 
            #hash our password
            hasher.update(password)
            password = hasher.hexdigest()
 
-           #hash our email
-           hasher.update(email)
-           email = hasher.hexdigest()
+ 
 
             #insert user in database:
            db.insert_one({"email" : email, "password" : password})
-           print("added a new user")
+           print("New User has been successfully added")
     except Exception as error:
         print("Error: ", error)
 
@@ -67,24 +73,32 @@ def findUser(db: Collection, email:str, password:str):
         #encode our email and passwords first
         email = email.encode('utf-8')
         password = password.encode('utf-8')
-
         #define our hasher:
         hasher = hashlib.sha512()
+        #hash our email
+        
+        hasher.update(email)
+        email = hasher.hexdigest()
+
+    
         hasher.update(password)
         password = hasher.hexdigest()
 
-        #hash our email
-        hasher.update(email)
-        email = hasher.hexdigest()
-        print(email)
-        print(password)
+      
         result = db.find_one({"email" : email, "password" : password})
         
         if result is None:
-            raise Exception("Could not find user in database")
+            raise UserNotFoundError("Could not find user in database")
     except Exception as error:
         print("Error: ", error)
     finally:
         return result
 
-
+def findEmail(db: Collection, email: str):
+    email = email.encode('utf-8')
+    #define our hasher:
+    hasher = hashlib.sha512()
+    hasher.update(email)
+    email = hasher.hexdigest()
+    result = db.find_one({"email" : email})
+    return result #let code continue if no email has been found

@@ -85,18 +85,17 @@ def user_selection():
     selected_option, selected_index = pick.pick(options, prompt)
     return selected_index
 
-
 def sign_up(users_collection):
-    signup_email = getEmailInput()
-    signup_password = getPasswordInput()
-    #Check if user is already in database
-    result = findUser(users_collection, signup_email, signup_password)
-    if result is None:
-        insertUser(users_collection, signup_email, signup_password)
-        return True
-    else:
-        print("Email has already been used for sign up, please try again")
-        return False
+        signup_email = getEmailInput()
+        signup_password = getPasswordInput()
+        #Check if user is already in database
+        result = findEmail(users_collection, signup_email)
+        if result is None:
+            insertUser(users_collection, signup_email, signup_password)
+            return True
+        else:
+            print("Email has already been used for sign up, please try again")
+            return False
 
 
 #GET THE URL FROM ENVIRONMENT
@@ -109,13 +108,3 @@ selected_option, selected_index = pick.pick(options, prompt)
 os.system('cls||clear') #this clears the terminal, cls is for windows and clear is for linux
 print("You have selected to", selected_option)
 startup_selection(selected_index)
-
-
-
-#TODO: store the login information in a database
-'''database = initialize(url, 'gamer')
-email = getEmailInput()
-pw = getPasswordInput()
-
-insertPassword(database, email, pw)
-'''
