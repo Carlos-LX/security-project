@@ -32,15 +32,17 @@ def startup_selection(selected_index):
                 login_password = input("Please enter your password: ") #no need to bother the user with password requirements, so this is a simple input. When signing up the user is forced to pick a strong password anyway.
                 result = findUser(users_collection, login_email, login_password)
                 if (result):#If a match was found
-                    
+                    picked_action = None
                     currentUser = User(login_email,login_password)
                    #search for a collection in the passwords database that corresponds to the users ID
                     pw_db = initialize(url, 'passwords')
                     print(pw_db)
                     print()
                     pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
-                    picked_action = user_selection()
-                    user_action(currentUser, picked_action, pw_collection)
+                    while picked_action != 3:
+                        picked_action = user_selection()
+                        user_action(currentUser, picked_action, pw_collection)
+
             except Exception as e:
                 print(e)
         case 1:
@@ -49,31 +51,33 @@ def startup_selection(selected_index):
               signed_up = sign_up(users_collection)
 
 
+def encrypt_input_email_and_input_password(details_key):
+            newly_added_email = getEmailInput()
+            newly_added_password = getPasswordInput()
+            encrypted_email = encrypt_inserted_message(details_key,newly_added_email)
+            encrypted_password = encrypt_inserted_message(details_key,newly_added_password)
+            return encrypted_email, encrypted_password
 
 def user_action(user : User, action, collection: Collection): #do an action on the collection basically
     #clear the terminal
-    os.system('cls||clear')
-    match action:
-        case 0:
-            newly_added_email = getEmailInput()
-            newly_added_password = getPasswordInput()
-            details_key = user.generateKey()
-            
-            encrypted_email = encrypt_inserted_message(details_key,newly_added_email)
-            encrypted_password = encrypt_inserted_message(details_key,newly_added_password)
-            insertPassword(collection, encrypted_email, encrypted_password)
-        case 1:
-            print("test1")
-        case 2:
-            details_key = user.generateKey()
-            allpw = getPasswords(collection)
-            for pw in allpw:
-                decrypted_email = decrypt_inserted_message(details_key, pw['email'])
-                decrypted_password = decrypt_inserted_message(details_key, pw['password'])
-                print("Email: " + decrypted_email + "\t Password: " + decrypted_password)
-            input("Press any key to return to menu")
-        case 3:
-            return None
+        os.system('cls||clear')
+        match action:
+            case 0:
+                encrypted_email, encrypted_password = encrypt_input_email_and_input_password(user.generateKey())
+                insertPassword(collection, encrypted_email, encrypted_password)
+            case 1:
+                print("test1")
+            case 2:
+                details_key = user.generateKey()
+                allpw = getPasswords(collection)
+                for pw in allpw:
+                    decrypted_email = decrypt_inserted_message(details_key, pw['email'])
+                    decrypted_password = decrypt_inserted_message(details_key, pw['password'])
+                    print("Email: " + decrypted_email + "\t Password: " + decrypted_password)
+            case 3:
+                return None
+        print()
+        input("Press any key to return to menu\n")
 
 def user_selection():
     prompt = "What do you want to do? "
