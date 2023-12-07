@@ -16,10 +16,7 @@ def initializeUsers(url):
     #create a client
     try:
         client = MongoClient(url, server_api=ServerApi('1'))
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
         users_collection = client['users']['users'] #go in the users database and get the users collection
-        print("Connected to MongoDb")
         
        
     except errors.ConnectionFailure as e:
@@ -88,7 +85,7 @@ def findUser(db: Collection, email:str, password:str):
         result = db.find_one({"email" : email, "password" : password})
         
         if result is None:
-            raise UserNotFoundError("Could not find user in database")
+            raise UserNotFoundError("Email or password was incorrect")
     except Exception as error:
         print("Error: ", error)
     finally:

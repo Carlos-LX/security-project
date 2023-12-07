@@ -24,32 +24,36 @@ def decrypt_inserted_message(key, encrypted_string):
     return decryped_string
 
 def startup_selection(selected_index):
+    if selected_index == 2:
+        exit()
     users_collection=initializeUsers(url)
-    match selected_index: #basically a switch statement
-        case 0:
-            try:
-                login_email = getEmailInput()
-                login_password = input("Please enter your password: ") #no need to bother the user with password requirements, so this is a simple input. When signing up the user is forced to pick a strong password anyway.
-                result = findUser(users_collection, login_email, login_password)
-                if (result):#If a match was found
-                    picked_action = None
-                    currentUser = User(login_email,login_password)
-                   #search for a collection in the passwords database that corresponds to the users ID
-                    pw_db = initialize(url, 'passwords')
-                    print(pw_db)
-                    print()
-                    pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
-                    while picked_action != 3:
-                        picked_action = user_selection()
-                        user_action(currentUser, picked_action, pw_collection)
+    while selected_index != 2:
+        match selected_index: #basically a switch statement
+            case 0:
+                try:
+                    login_email = getEmailInput()
+                    login_password = input("Please enter your password: ") #no need to bother the user with password requirements, so this is a simple input. When signing up the user is forced to pick a strong password anyway.
+                    result = findUser(users_collection, login_email, login_password)
+                    if (result):#If a match was found
+                        picked_action = None
+                        currentUser = User(login_email,login_password)
+                    #search for a collection in the passwords database that corresponds to the users ID
+                        pw_db = initialize(url, 'passwords')
+                        print(pw_db)
+                        print()
+                        pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
+                        while picked_action != 3:
+                            picked_action = user_selection()
+                            user_action(currentUser, picked_action, pw_collection)
 
-            except Exception as e:
-                print(e)
-        case 1:
-            signed_up = False
-            while signed_up  != True:
-              signed_up = sign_up(users_collection)
-
+                except Exception as e:
+                    print(e)
+            case 1:
+                signed_up = False
+                while signed_up  != True:
+                    signed_up = sign_up(users_collection)
+            case 2:
+                exit()
 
 def encrypt_input_email_and_input_password(details_key):
             newly_added_email = getEmailInput()
@@ -66,7 +70,7 @@ def user_action(user : User, action, collection: Collection): #do an action on t
                 encrypted_email, encrypted_password = encrypt_input_email_and_input_password(user.generateKey())
                 insertPassword(collection, encrypted_email, encrypted_password)
             case 1:
-                print("test1")
+                print("NOT ADDED YET")
             case 2:
                 details_key = user.generateKey()
                 allpw = getPasswords(collection)
@@ -100,11 +104,13 @@ def sign_up(users_collection):
 
 #GET THE URL FROM ENVIRONMENT
 # VARIABLES
+selected_index = None
 url = os.getenv('ENV_URL_PRE')+os.getenv('ENV_PASSWORD')+os.getenv('ENV_URL_POST')
 #Define the title using pick
-prompt = "Welcome to the password manager! \n" + "Please select one of the following options: "
-options = ['Log in', 'Sign up']
-selected_option, selected_index = pick.pick(options, prompt)
-os.system('cls||clear') #this clears the terminal, cls is for windows and clear is for linux
-print("You have selected to", selected_option)
-startup_selection(selected_index)
+while selected_index != 2:
+    prompt = "Welcome to the password manager! \n" + "Please select one of the following options: "
+    options = ['Log in', 'Sign up', 'Exit']
+    selected_option, selected_index = pick.pick(options, prompt)
+    os.system('cls||clear') #this clears the terminal, cls is for windows and clear is for linux
+    print("You have selected to", selected_option)
+    startup_selection(selected_index)

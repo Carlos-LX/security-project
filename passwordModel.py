@@ -13,10 +13,7 @@ def initialize(url, database_name):
     #create a client
     try:
         client = MongoClient(url, server_api=ServerApi('1'))
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
         db = client[database_name]
-        print("Connected to MongoDb")
         
        
     except errors.ConnectionFailure as e:
