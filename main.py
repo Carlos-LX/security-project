@@ -44,7 +44,10 @@ def startup_selection(selected_index):
                         pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
                         while picked_action != 3:
                             picked_action = user_selection()
-                            user_action(currentUser, picked_action, pw_collection)
+                        if picked_action == 3:
+                            currentUser = None
+                            break
+                        user_action(currentUser, picked_action, pw_collection)
 
                 except Exception as e:
                     print(e)
@@ -52,6 +55,7 @@ def startup_selection(selected_index):
                 signed_up = False
                 while signed_up  != True:
                     signed_up = sign_up(users_collection)
+                break
             case 2:
                 exit()
 
@@ -96,6 +100,7 @@ def sign_up(users_collection):
         result = findEmail(users_collection, signup_email)
         if result is None:
             insertUser(users_collection, signup_email, signup_password)
+            input("Press any key to continue.\n")
             return True
         else:
             print("Email has already been used for sign up, please try again")
