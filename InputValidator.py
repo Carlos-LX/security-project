@@ -4,7 +4,7 @@ import re
 
 #define functions
 
-def email_validation(email,):
+def email_validation(email):
     try:
         validate_email(email,check_deliverability=False)
         return True

@@ -1,4 +1,5 @@
-from pymongo import MongoClient, errors
+from pymongo import MongoClient, errors, cursor
+from pymongo.collection import Collection
 from pymongo.errors import OperationFailure
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -32,13 +33,13 @@ def initialize(url, database_name):
 
 
 
-def insertPassword(db, email: str, password: str):
+def insertPassword(collection: Collection, email: str, password: str):
     try:
        if (email_validation(email) and password_validation(password)):
-           collection =  db['test']
            collection.insert_one({"email" : email, "password" : password})
-           print("gamer")
+           print("Successfully added details to database")
     except Exception as error:
         print("Error: ", error)
-
-
+        
+def getPasswords(collection: Collection) -> cursor.Cursor:
+    return collection.find()
