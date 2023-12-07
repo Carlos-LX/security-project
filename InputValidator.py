@@ -35,8 +35,23 @@ def password_validation(password: str):
         number_result = re.search(r'\d', password)
         if (number_result == None):
             raise ValueError("Password must contain at least 1 digit")
+
+         # Check if the password is common
+        if isCommonPassword(password):
+            raise ValueError("Password is too common. Choose a stronger password")
         
         return True
+    except ValueError as e:
+        print(e)
+        return False
+
+def isCommonPassword(password: str):
+    try:
+        with open('bruteforce.txt', 'r') as file:
+            common_passwords = file.read().lower().splitlines()
+            if password.lower() in common_passwords:
+                return True
+        return False
     except ValueError as e:
         print(e)
         return False
