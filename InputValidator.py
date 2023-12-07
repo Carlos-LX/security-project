@@ -4,9 +4,9 @@ import re
 
 #define functions
 
-def email_validation(email):
+def email_validation(email,):
     try:
-        validate_email(email)
+        validate_email(email,check_deliverability=False)
         return True
     except EmailNotValidError as e:
         print(e)
@@ -45,14 +45,14 @@ def password_validation(password: str):
 
     
 def getEmailInput():
-    email = input("Please input an email: ")
+    email = input("Please enter an email: ")
     while (email_validation(email) == False):
-        email = input("Please input an email: ")
+        email = input("Please enter an email: ")
     return email
 
 def getPasswordInput():
-    password = input("Please input a password: ")
+    password = input("Please enter a password: ")
     while (password_validation(password=password) == False):
-        password = input("Please input a password: ")
+        password = input("Please enter a password: ")
     return password
 

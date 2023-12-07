@@ -5,24 +5,12 @@ from dotenv import load_dotenv
 from passwordModel import *
 from usersModel import *
 import os
-from pick import pick
+import pick
+
 
 
 #initialize the .env variables
 load_dotenv()
-
-
-try:
-    key_file = open("key.txt")
-except FileNotFoundError as e:
-
-
-    key = Fernet.generate_key()
-    key_file = open("key.txt" , "w")
-    key_file.write(key)
-    key_file.close()
-
-
 def user_selection(selected_index):
     users_collection=initializeUsers(url)
     match selected_index: #basically a switch statement
@@ -55,15 +43,12 @@ def sign_up(users_collection):
 #GET THE URL FROM ENVIRONMENT
 # VARIABLES
 url = os.getenv('ENV_URL_PRE')+os.getenv('ENV_PASSWORD')+os.getenv('ENV_URL_POST')
-print(url)
-
-
-
 #Define the title using pick
 prompt = "Welcome to the password manager! \n" + "Please select one of the following options: "
 options = ['Log in', 'Sign up']
-selected_option, selected_index = pick(options, prompt)
+selected_option, selected_index = pick.pick(options, prompt)
 os.system('cls||clear') #this clears the terminal, cls is for windows and clear is for linux
+print("You have selected to", selected_option)
 user_selection(selected_index)
 
 
