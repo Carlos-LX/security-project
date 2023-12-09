@@ -30,12 +30,22 @@ def initialize(url, database_name):
 
 
 
-def insertPassword(collection: Collection, email: str, password: str):
+def insertPassword(collection: Collection, email: str, password: str): #option 0 in passwords menu
     try:
            collection.insert_one({"email" : email, "password" : password})
            print("Successfully added details to database")
     except Exception as error:
         print("Error: ", error)
         
-def getPasswords(collection: Collection) -> cursor.Cursor:
+        
+def deletePassword(collection: Collection, document: dict):
+    try:
+        collection.delete_one(document)
+        print("Successfully deleted credentials from database")
+    except Exception as error:
+        print("Error: ", error)
+        
+
+def getPasswords(collection: Collection) -> cursor.Cursor: #option 2
     return collection.find()
+

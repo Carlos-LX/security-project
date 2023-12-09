@@ -75,7 +75,23 @@ def user_action(user : User, action, collection: Collection): #do an action on t
                 encrypted_email, encrypted_password = encrypt_input_email_and_input_password(user.generateKey())
                 insertPassword(collection, encrypted_email, encrypted_password)
             case 1:
-                print("NOT ADDED YET")
+                details_key = user.generateKey()
+                allpw = getPasswords(collection)
+                length = collection.count_documents({}) #get the length of the collection
+                options_list = []
+                if length > 0:
+                    for pw in allpw:
+                        decrypted_email = decrypt_inserted_message(details_key, pw['email'])
+                        decrypted_password = decrypt_inserted_message(details_key, pw['password'])
+                        options_list.append("Email: " + decrypted_email + " Password: " + decrypted_password)
+                    prompt = "Select an account to delete:"
+                    selected_option, selected_index = pick.pick(options_list, prompt)
+                    #Rewind cursor to the beginning and get the selected account
+                    allpw.rewind()
+                    selected_account = allpw[selected_index]
+                    deletePassword(collection, selected_account)
+                else:
+                    print("No credentials have been registered yet")
             case 2:
                 details_key = user.generateKey()
                 allpw = getPasswords(collection)
@@ -86,7 +102,10 @@ def user_action(user : User, action, collection: Collection): #do an action on t
             case 3:
                 return None
         print()
-        input("Press any key to return to menu\n")
+        input("Press Enter to return to menu\n")
+
+    
+
 
 def user_selection():
     prompt = "What do you want to do? "

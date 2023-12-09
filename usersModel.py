@@ -37,20 +37,21 @@ def initializeUsers(url):
 def insertUser(db: Collection , email: str, password: str):
     try:
 
-       #define our hasher:
-       hasher = hashlib.sha512()
+       
        if (email_validation(email) and password_validation(password)):
            
             #encode our email and passwords first
            email = email.encode('utf-8')
            password = password.encode('utf-8')
-
-          #hash our email
+           #define our hasher:
+           hasher = hashlib.sha512()
+           #hash our email
            hasher.update(email)
            email = hasher.hexdigest()
 
 
            #hash our password
+           hasher = hashlib.sha512()
            hasher.update(password)
            password = hasher.hexdigest()
 
@@ -76,8 +77,8 @@ def findUser(db: Collection, email:str, password:str):
         
         hasher.update(email)
         email = hasher.hexdigest()
-
-    
+        #reset the hasher
+        hasher = hashlib.sha512()
         hasher.update(password)
         password = hasher.hexdigest()
 
