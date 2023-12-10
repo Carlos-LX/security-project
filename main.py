@@ -24,6 +24,7 @@ def decrypt_inserted_message(key, encrypted_string):
     return decryped_string
 
 def startup_selection(selected_index):
+    currentUser = None
     if selected_index == 2:
         exit()
     users_collection=initializeUsers(url)
@@ -31,27 +32,28 @@ def startup_selection(selected_index):
         match selected_index: #basically a switch statement
             case 0:
                 try:
-                    login_email = getEmailInput()
-                    login_password = input("Please enter your password: ") #no need to bother the user with password requirements, so this is a simple input. When signing up the user is forced to pick a strong password anyway.
-                    result = findUser(users_collection, login_email, login_password)
-                    if (result):#If a match was found
-                        picked_action = None
-                        currentUser = User(login_email,login_password)
+                    
+                    if currentUser is None: #if any error is thrown while adding/deleting or reading all account credentials then user will not be logged out
+                        login_email = getEmailInput()
+                        login_password = input("Please enter your password: ") #no need to bother the user with password requirements, so this is a simple input. When signing up the user is forced to pick a strong password anyway.
+                        result = findUser(users_collection, login_email, login_password)
+                        if (result):#If a match was found
+                            picked_action = None
+                            currentUser = User(login_email,login_password)
                     #search for a collection in the passwords database that corresponds to the users ID
-                        pw_db = initialize(url, 'passwords')
-                        print(pw_db)
-                        print()
-                        pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
-                        while picked_action != 3:
-                            picked_action = user_selection()
-                            user_action(currentUser, picked_action, pw_collection)
-                        if picked_action == 3:
-                            currentUser = None
-                            break
+                    pw_db = initialize(url, 'passwords')
+                    pw_collection = pw_db[str(result["_id"])] #create/select a collection that corresponds to the user ID
+                    while picked_action != 3:
+                        picked_action = user_selection()
+                        user_action(currentUser, picked_action, pw_collection)
+                    if picked_action == 3:
+                        currentUser = None
+                        break
                       
 
                 except Exception as e:
-                    print(e)
+                    print("An error has occurred:" + str(e))
+                    input("Press enter to return to menu ") #wait for the user to input
             case 1:
                 signed_up = False
                 while signed_up  != True:
@@ -72,6 +74,7 @@ def user_action(user : User, action, collection: Collection): #do an action on t
         os.system('cls||clear')
         match action:
             case 0:
+                raise Exception("test")
                 encrypted_email, encrypted_password = encrypt_input_email_and_input_password(user.generateKey())
                 insertPassword(collection, encrypted_email, encrypted_password)
             case 1:
