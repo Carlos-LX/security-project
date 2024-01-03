@@ -71,3 +71,21 @@ def getPasswordInput():
         password = input("Please enter a password: ")
     return password
 
+
+
+def getDetailsInput():
+    #Get the email
+    email = input("Please enter an email: ")
+    while (email_validation(email) == False):
+        email = input("Please enter an email: ")
+    #Get the password
+    password = input("Please enter a password: ")
+    while (password_validation(password=password) == False):
+        password = input("Please enter a password: ")
+    #Get the service
+    service = input("Please input the service: ") 
+    while len(service) < 1:
+        print("Invalid website, please try again")
+        service = input("Please input the service: ") 
+    return email, password, service
+

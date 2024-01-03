@@ -14,14 +14,22 @@ import base64
 load_dotenv()
 currentUser = None
 
-def encrypt_inserted_message(key, string):
+def encrypt_details(key, email, password, service):
     cipher = Fernet(key)
-    encryped_string = cipher.encrypt(string.encode())
-    return encryped_string.decode()
-def decrypt_inserted_message(key, encrypted_string):
+    encrypted_email = (cipher.encrypt(email.encode())).decode() #Gotta use decode because cipher.encrypt returns bytes.
+    encrypted_password = (cipher.encrypt(password.encode())).decode()
+    encrypted_service = (cipher.encrypt(service.encode())).decode()
+    return encrypted_email, encrypted_password, encrypted_service
+
+
+
+def decrypt_details(key, enc_email, enc_password, enc_service):
     cipher = Fernet(key)
-    decryped_string = cipher.decrypt(encrypted_string).decode()
-    return decryped_string
+    decrypted_email = cipher.encrypt(enc_email).decode()
+    decrypted_password = cipher.encrypt(enc_password).decode()
+    decrypted_service = cipher.encrypt(enc_service).decode()
+    
+    return decrypted_email, decrypted_password, decrypted_service
 
 def startup_selection(selected_index):
     currentUser = None
@@ -54,6 +62,7 @@ def startup_selection(selected_index):
                 except Exception as e:
                     print("An error has occurred:" + str(e))
                     input("Press enter to return to menu ") #wait for the user to input
+                    break
             case 1:
                 signed_up = False
                 while signed_up  != True:
@@ -62,31 +71,27 @@ def startup_selection(selected_index):
             case 2:
                 exit()
 
-def encrypt_input_email_and_input_password(details_key):
-            newly_added_email = getEmailInput()
-            newly_added_password = getPasswordInput()
-            encrypted_email = encrypt_inserted_message(details_key,newly_added_email)
-            encrypted_password = encrypt_inserted_message(details_key,newly_added_password)
-            return encrypted_email, encrypted_password
+def get_details_and_encrypt(details_key):
+            newly_added_email, newly_added_password, newly_added_service = getDetailsInput()
+            encrypted_email, encrypted_password, encrypted_service = encrypt_details(details_key,newly_added_email, newly_added_password, newly_added_service)
+            return encrypted_email, encrypted_password, encrypted_service
 
 def user_action(user : User, action, collection: Collection): #do an action on the collection basically
     #clear the terminal
         os.system('cls||clear')
-        match action:
-            case 0:
-                raise Exception("test")
-                encrypted_email, encrypted_password = encrypt_input_email_and_input_password(user.generateKey())
-                insertPassword(collection, encrypted_email, encrypted_password)
-            case 1:
+
+        if (action == 0):
+                encrypted_email, encrypted_password, encrypted_service = get_details_and_encrypt(user.generateKey())
+                insertDetails(collection, encrypted_email, encrypted_password, encrypted_service)
+        elif (action == 1):
                 details_key = user.generateKey()
                 allpw = getPasswords(collection)
                 length = collection.count_documents({}) #get the length of the collection
                 options_list = []
                 if length > 0:
                     for pw in allpw:
-                        decrypted_email = decrypt_inserted_message(details_key, pw['email'])
-                        decrypted_password = decrypt_inserted_message(details_key, pw['password'])
-                        options_list.append("Email: " + decrypted_email + " Password: " + decrypted_password)
+                        decrypted_email, decrypted_password, decrypted_service = decrypt_details(details_key, pw['email'], pw['password'], pw['service'])
+                        options_list.append("Email: " + decrypted_email + " Password: " + decrypted_password + " Service: " + decrypted_service)
                     prompt = "Select an account to delete:"
                     selected_option, selected_index = pick.pick(options_list, prompt)
                     #Rewind cursor to the beginning and get the selected account
@@ -95,14 +100,13 @@ def user_action(user : User, action, collection: Collection): #do an action on t
                     deletePassword(collection, selected_account)
                 else:
                     print("No credentials have been registered yet")
-            case 2:
+        elif (action == 2):
                 details_key = user.generateKey()
                 allpw = getPasswords(collection)
                 for pw in allpw:
-                    decrypted_email = decrypt_inserted_message(details_key, pw['email'])
-                    decrypted_password = decrypt_inserted_message(details_key, pw['password'])
-                    print("Email: " + decrypted_email + "\t Password: " + decrypted_password)
-            case 3:
+                    decrypted_email, decrypted_password, decrypted_service = decrypt_details(details_key, pw['email'], pw['password'], pw['service'])
+                    print("Email: " + decrypted_email + "\t Password: " + decrypted_password + "\t Service: " + decrypted_service)
+        else:
                 return None
         print()
         input("Press Enter to return to menu\n")

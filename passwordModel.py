@@ -30,9 +30,9 @@ def initialize(url, database_name):
 
 
 
-def insertPassword(collection: Collection, email: str, password: str): #option 0 in passwords menu
+def insertDetails(collection: Collection, email: str, password: str, service: str): #option 0 in passwords menu
     try:
-           collection.insert_one({"email" : email, "password" : password})
+           collection.insert_one({"email" : email, "password" : password, "service" : service})
            print("Successfully added details to database")
     except Exception as error:
         print("Error: ", error)
